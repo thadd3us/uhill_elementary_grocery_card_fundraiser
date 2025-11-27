@@ -1,0 +1,27 @@
+[project]
+name = "envelope-mail-merge"
+version = "0.1.0"
+description = "Generate envelope PDFs from Excel data"
+requires-python = ">=3.10"
+dependencies = [
+    "typer>=0.9.0",
+    "pandas>=2.0.0",
+    "openpyxl>=3.1.0",
+    "reportlab>=4.0.0",
+    "pillow>=10.0.0",
+]
+
+[project.scripts]
+envelope_mail_merge = "envelope_mail_merge:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest>=7.0.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
