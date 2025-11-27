@@ -20,7 +20,7 @@ def create_envelope_page(story, row, header_text: str, image_path: Path):
     # Add header text
     styles = getSampleStyleSheet()
     title_style = styles['Title']
-    title_style.fontSize = 9
+    title_style.fontSize = 11
     header = Paragraph(header_text, title_style)
     story.append(header)
     story.append(Spacer(1, 0.05*inch))
@@ -41,14 +41,15 @@ def create_envelope_page(story, row, header_text: str, image_path: Path):
     ]
 
     # Create table with appropriate widths
-    col_widths = [0.85*inch, 1.7*inch, 1.15*inch, 0.35*inch]
+    # Original widths scaled up by factor of (4.05 + 1.18) / 4.05 = 1.2914
+    col_widths = [1.098*inch, 2.195*inch, 1.485*inch, 0.452*inch]
     table = Table(table_data, colWidths=col_widths)
 
     # Style the table
     style = TableStyle([
         ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 0), (-1, -1), 8),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
         ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ('LEFTPADDING', (0, 0), (-1, -1), 2),
