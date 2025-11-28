@@ -4,6 +4,7 @@ import pandas as pd
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.lib.units import inch
 from reportlab.platypus import (
+    PageBreak,
     SimpleDocTemplate,
     Table,
     TableStyle,
@@ -126,7 +127,7 @@ def main(
     story = []
     for idx, row in tqdm(df.iterrows()):
         if idx > 0:
-            story.append(Spacer(1, 0))
+            story.append(PageBreak())
         create_envelope_page(story, row, header_text, image_file)
 
     doc.build(story)
