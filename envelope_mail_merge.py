@@ -105,7 +105,7 @@ def create_envelope_page(story, row, header_text: str, image_path: Path):
 
 @app.command()
 def main(
-    input_file: Path = typer.Argument(..., help="Input Excel file"),
+    envelopes_file: Path = typer.Argument(..., help="Input Excel file with envelope data"),
     output_file: Path = typer.Argument(..., help="Output PDF file"),
     header_text: str = typer.Argument(..., help="Header text for each page"),
     image_file: Path = typer.Option(
@@ -113,7 +113,7 @@ def main(
     ),
 ):
     """Generate envelope PDFs from Excel data."""
-    df = pd.read_excel(input_file)
+    df = pd.read_excel(envelopes_file)
 
     doc = SimpleDocTemplate(
         str(output_file),
