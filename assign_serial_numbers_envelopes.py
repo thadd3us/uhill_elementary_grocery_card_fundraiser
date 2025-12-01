@@ -25,7 +25,9 @@ def main(
                    if any(col.endswith(f'${amt}') for amt in ['50', '100', '200'])]
 
     # Verify that serial_numbers_df has matching columns
-    missing_cols = set(card_columns) - set(serial_numbers_df.columns)
+    # Exception: Save-On-Foods $200 is synthesized from $100 cards
+    required_cols = [col for col in card_columns if col != "Save-On-Foods $200"]
+    missing_cols = set(required_cols) - set(serial_numbers_df.columns)
     if missing_cols:
         typer.echo(f"Error: Serial numbers file is missing columns: {missing_cols}", err=True)
         raise typer.Exit(1)
@@ -33,9 +35,6 @@ def main(
     # Build the serial number pools
     serial_pools = {}
     for col in card_columns:
-        # Get non-null serial numbers from the column (already strings from dtype=str)
-        serials = serial_numbers_df[col].dropna().tolist()
-
         # Special handling for Save-On $200 - create synthetic cards from pairs of $100
         if col == "Save-On-Foods $200":
             # Count how many $200 cards we need
@@ -56,10 +55,10 @@ def main(
                 # Remove the used $100 cards from the pool
                 serial_pools["Save-On-Foods $100"] = all_100_serials[cards_needed:]
                 serial_pools[col] = synthetic_200
-            else:
-                serial_pools[col] = serials
         elif col != "Save-On-Foods $100":
             # For non-Save-On-100 columns, just use the serials as-is
+            # Get non-null serial numbers from the column (already strings from dtype=str)
+            serials = serial_numbers_df[col].dropna().tolist()
             serial_pools[col] = serials
         # Save-On-Foods $100 is handled in the $200 block above
 
