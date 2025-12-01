@@ -93,10 +93,8 @@ def main(
         envelope_num = row.get("Envelope Number", idx)
         student_name = row.get("Student Name", "")
 
-        result_row = {
-            "Envelope Number": envelope_num,
-            "Student Name": student_name,
-        }
+        # Build a single string with all assigned serial numbers
+        assigned_parts = []
 
         # For each card type, assign serial numbers
         for col in card_columns:
@@ -112,10 +110,17 @@ def main(
                     if serial_pools[col]:
                         assigned_serials.append(serial_pools[col].pop(0))
 
-                # Join multiple serials with space
-                result_row[col] = " ".join(assigned_serials) if assigned_serials else ""
-            else:
-                result_row[col] = ""
+                if assigned_serials:
+                    # Create shortened label (e.g., "Choices Market $200" -> "Choices $200")
+                    label = col.replace(" Market", "").replace("-Foods", "")
+                    serials_str = ", ".join(assigned_serials)
+                    assigned_parts.append(f"{label}: {serials_str}")
+
+        result_row = {
+            "Envelope Number": envelope_num,
+            "Student Name": student_name,
+            "Assigned Serial Numbers": "; ".join(assigned_parts) if assigned_parts else ""
+        }
 
         output_rows.append(result_row)
 
@@ -130,14 +135,16 @@ def main(
     # Write output - use ExcelWriter to ensure strings are preserved
     with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
         output_df.to_excel(writer, index=False)
-        # Format all card columns as text to prevent scientific notation
+        # Format the serial numbers column as text to prevent scientific notation
         worksheet = writer.sheets['Sheet1']
         for col_idx, col_name in enumerate(output_df.columns, start=1):
-            if any(col_name.endswith(f'${amt}') for amt in ['50', '100', '200']):
+            if col_name == "Assigned Serial Numbers":
                 for row_idx in range(2, len(output_df) + 2):  # Start from row 2 (after header)
                     cell = worksheet.cell(row=row_idx, column=col_idx)
                     if cell.value:
                         cell.number_format = '@'  # Text format
+                # Make this column wider for better readability
+                worksheet.column_dimensions[chr(64 + col_idx)].width = 80
 
     typer.echo(f"Generated {output_file} with {len(output_df)} envelopes")
 
