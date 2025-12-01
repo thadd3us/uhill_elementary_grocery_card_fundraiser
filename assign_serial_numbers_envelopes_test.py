@@ -34,12 +34,13 @@ def test_assign_serial_numbers():
     output_df = pd.read_excel(output_file)
     assert "Envelope Number" in output_df.columns
     assert "Student Name" in output_df.columns
+    assert "Assigned Serial Numbers" in output_df.columns
 
-    # Verify that serial numbers were assigned
-    card_columns = [col for col in output_df.columns
-                   if any(col.endswith(f'${amt}') for amt in ['50', '100', '200'])]
-    assert len(card_columns) > 0, "No card columns found in output"
+    # Verify that serial numbers were assigned (check that the column has content)
+    assigned_serials = output_df["Assigned Serial Numbers"].dropna()
+    assert len(assigned_serials) > 0, "No serial numbers were assigned"
 
     print(f"\nGenerated output at: {output_file}")
     print(f"Output: {result.stdout}")
     print(f"\nFirst few rows:\n{output_df.head()}")
+    print(f"\nSample assigned serial numbers:\n{assigned_serials.iloc[0] if len(assigned_serials) > 0 else 'None'}")
