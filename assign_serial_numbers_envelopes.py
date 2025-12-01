@@ -45,12 +45,22 @@ def main(
             if save_on_100_col in serial_numbers_df.columns:
                 all_100_serials = serial_numbers_df[save_on_100_col].dropna().tolist()
 
-                # Create synthetic $200 cards from pairs of $100 cards
+                # Create synthetic $200 cards from pairs of $100 cards (from the beginning)
                 synthetic_200 = []
                 cards_needed = total_200_needed * 2  # Need 2x $100 cards
                 for i in range(0, cards_needed, 2):
                     if i + 1 < len(all_100_serials):
                         synthetic_200.append(f"{all_100_serials[i]},{all_100_serials[i+1]}")
+
+                # Print out the synthetic $200 cards so they can be set aside
+                if synthetic_200:
+                    typer.echo("\n" + "="*60)
+                    typer.echo(f"SYNTHETIC Save-On-Foods $200 cards (set these aside):")
+                    typer.echo("="*60)
+                    for idx, card_pair in enumerate(synthetic_200, 1):
+                        card1, card2 = card_pair.split(',')
+                        typer.echo(f"  ${200} card #{idx}: {card1} + {card2}")
+                    typer.echo("="*60 + "\n")
 
                 # Remove the used $100 cards from the pool
                 serial_pools["Save-On-Foods $100"] = all_100_serials[cards_needed:]
